@@ -1,6 +1,7 @@
 import streamlit as st
 from pymongo import MongoClient
 import os
+from streamlit_carousel import carousel
 
 # MongoDB connection setup
 @st.cache_resource
@@ -17,20 +18,42 @@ items_collection = db["item"]  # Collection for items
 
 # Streamlit UI
 st.title("Foods")
+items = list(items_collection.find({}))
+if 'cart_session' not in st.session_state:
+    st.session_state['cart_session'] = {}
 
-cart_items = list(items_collection.find({}))
-if cart_items:
+
+def add_to_cart(item, quantity):
+    print(item, quantity)
+    cart = st.session_state['cart_session']
+    print("cart before")
+    print(cart)
+    print("__________________")
+    cart[item] = quantity
+    print("cart after")
+    print(cart)
+    st.session_state['cart_session'] = cart
+    print("__________________")
+
+
+if items:
     total = 0
-    for item in cart_items:
-        st.write(f"**{item['short_name']}** - ${item['price']}")
-        st.image(item['image_link'])
-        col1, col2, col3 = st.columns(3)
+    for item in items:
+        top_container = st.container(border=True)
+        top_container.subheader(f"**{item['short_name']}** - ${item['price']}", divider="gray")
+        col1, col2 = top_container.columns((2, 2))
         with col1:
-            number = st.number_input("Quantity", min_value=1, max_value=10, step=1, key=f"quantity{item['item_no']}")
+            carousel(items=item['image_list'])
         with col2:
-            add_to_cart = st.button("Add to cart", key=f"cart{item['item_no']}", type="primary")
-        with col3:
-            view_detail = st.button("View Details", key=f"details{item['item_no']}", type="secondary")
-        st.write("_"*30)
+            st.subheader(f"**{item['short_name']}**")
+            sub_col1, sub_col2 = st.columns((2, 2), vertical_alignment="bottom")
+            with sub_col1:
+                quantity = st.number_input("Quantity", min_value=0, max_value=3, step=1,
+                                           key=f"quantity{item['item_no']}")
+            with sub_col2:
+                st.button("Add to cart", key=f"cart{item['item_no']}", type="primary",
+                          on_click=add_to_cart(item['item_no'], quantity))
+            with st.popover("View Details"):
+                st.text(f"{item['desc']}")
 else:
     st.write("Item is empty.")
