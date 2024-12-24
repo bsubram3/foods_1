@@ -46,7 +46,7 @@ if items:
             carousel(items=item['image_list'])
         with col2:
             st.subheader(f"**{item['short_name']}**")
-            sub_col1, sub_col2 = st.columns((2, 2), vertical_alignment="bottom")
+            sub_col1, sub_col2 = st.columns((2, 3), vertical_alignment="bottom")
             with sub_col1:
                 quantity = st.number_input("Quantity", min_value=0, max_value=3, step=1,
                                            key=f"quantity{item['item_no']}")
