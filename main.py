@@ -32,9 +32,9 @@ def add_to_cart(item, quantity):
     cart[item] = quantity
     print("cart after")
     print(cart)
-    st.session_state['cart_session'] = cart
     print("__________________")
-
+    st.session_state['cart_session'] = cart
+    
 
 if items:
     total = 0
