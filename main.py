@@ -18,7 +18,7 @@ items_collection = db["item"]  # Collection for items
 
 
 # Streamlit UI
-st.title("Desi Foods")
+st.title("Desi Foods...")
 
 items = list(items_collection.find({}))
 if 'cart_session' not in st.session_state:
