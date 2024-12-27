@@ -16,8 +16,10 @@ def get_database():
 db = get_database()
 items_collection = db["item"]  # Collection for items
 
+
 # Streamlit UI
-st.title("Foods")
+st.title("Desi Foods")
+
 items = list(items_collection.find({}))
 if 'cart_session' not in st.session_state:
     st.session_state['cart_session'] = {}
@@ -32,9 +34,11 @@ def add_to_cart(item, quantity):
     cart[item] = quantity
     print("cart after")
     print(cart)
-    print("__________________")
     st.session_state['cart_session'] = cart
-    
+    print("__________________")
+
+
+print("items")
 
 if items:
     total = 0
@@ -43,8 +47,10 @@ if items:
         top_container.subheader(f"**{item['short_name']}** - ${item['price']}", divider="gray")
         col1, col2 = top_container.columns((2, 2))
         with col1:
+            # image_container = top_container.container()
             carousel(items=item['image_list'])
         with col2:
+            # info_container = top_container.container()
             st.subheader(f"**{item['short_name']}**")
             sub_col1, sub_col2 = st.columns((2, 3), vertical_alignment="bottom")
             with sub_col1:
@@ -55,5 +61,69 @@ if items:
                           on_click=add_to_cart(item['item_no'], quantity))
             with st.popover("View Details"):
                 st.text(f"{item['desc']}")
+    # Add custom CSS for the floating button
+    st.markdown(
+        """
+        <style>
+        .view-cart-button {
+            position: fixed;
+            bottom: 20px;
+            right: 100px;
+            background-color: #5dade2;
+            color: white;
+            border: none;
+            padding: 10px 10px;
+            border-radius: 10%;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .view-cart-button:hover {
+            background-color: #2e86c1;
+        }
+        .go-to-top-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+    
+        .go-to-top-button:hover {
+            background-color: #45a049;
+        }
+    
+        .go-to-top-button:focus {
+            outline: none;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    # Add the floating button with an action
+    st.markdown(
+        """
+        <button class="view-cart-button" onclick="window.alert('cart page')">
+            View Cart
+        </button>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <button class="go-to-top-button" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
+          &nbsp;&nbsp;^&nbsp;&nbsp; 
+        </button>
+        """,
+        unsafe_allow_html=True,
+    )
 else:
     st.write("Item is empty.")
